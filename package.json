@@ -1,13 +1,13 @@
 {
-  "name": "form-fate-core",
+  "name": "formfatecore",
   "version": "0.1.0",
   "description": "React Hook Form context for form generating libraries",
-  "main": "dist/index.cjs.js",
-  "module": "dist/index.esm.js",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "exports": {
-    "import": "./dist/index.esm.js",
-    "require": "./dist/index.cjs.js",
+    "import": "./dist/index.mjs",
+    "require": "./dist/index.js",
     "types": "./dist/index.d.ts"
   },
   "files": [
