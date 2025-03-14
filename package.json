@@ -1,0 +1,41 @@
+{
+  "name": "form-fate-core",
+  "version": "0.1.0",
+  "description": "React Hook Form context for form generating libraries",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    "import": "./dist/index.esm.js",
+    "require": "./dist/index.cjs.js",
+    "types": "./dist/index.d.ts"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsup src/index.ts --format esm,cjs --dts",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Form-Fate/core.git"
+  },
+  "author": "hajalimazen__",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Form-Fate/core/issues"
+  },
+  "homepage": "https://github.com/Form-Fate/core#readme",
+  "peerDependencies": {
+    "react": ">=17.0.0",
+    "react-hook-form": "^7.54.2"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.10",
+    "typescript": "^5.7.3",
+    "tsup": "^7.0.0",
+    "zod": "^3.24.2"
+  }
+}
