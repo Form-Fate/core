@@ -43,7 +43,7 @@ export const useFormFate = ({ formDefinition, onSubmit }: UseDynamicFormProps) =
     };
 
     // Initialize React Hook Form.
-    const { register, getValues, setValue, formState: { errors } } = useForm({ resolver });
+    const { register, getValues, setValue, formState: { errors, validatingFields, isValid, isValidating } } = useForm({ resolver });
 
     return {
         validatedSchema,
@@ -52,5 +52,8 @@ export const useFormFate = ({ formDefinition, onSubmit }: UseDynamicFormProps) =
         setValue,
         errors,
         onSubmit,
+        validatingFields,
+        isValid,
+        isValidating
     };
 };
