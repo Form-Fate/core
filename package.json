@@ -1,6 +1,6 @@
 {
   "name": "formfatecore",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "description": "React Hook Form context for form generating libraries",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
