@@ -1,9 +1,4 @@
-export interface FormFateTriggers {
-    label: string,
-    type: HTMLButtonElement['type'],
-    className?: string,
-    onClick?: () => void;
-}
+
 export interface FormDefinition {
     name?: string;
     properties: {
@@ -24,5 +19,4 @@ export interface FormDefinition {
         | { type: 'checkbox', title: string, description: string };
     };
     required?: string[];
-    buttons: FormFateTriggers[];
 };
