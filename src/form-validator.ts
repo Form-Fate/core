@@ -10,7 +10,8 @@ const simpleTextField = z.object({
     title: z.string(),
     description: z.string(),
     required: z.boolean().optional(),
-    validator: z.function().args(z.any()).returns(z.boolean()).optional(),
+    validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
+    default: z.string().optional(),
 });
 
 const passwordField = z.object({
@@ -18,7 +19,8 @@ const passwordField = z.object({
     title: z.string(),
     description: z.string(),
     required: z.boolean().optional(),
-    validator: z.function().args(z.any()).returns(z.boolean()).optional(),
+    validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
+    default: z.string().optional(),
 });
 
 const emailField = z.object({
@@ -26,7 +28,8 @@ const emailField = z.object({
     title: z.string(),
     description: z.string(),
     required: z.boolean().optional(),
-    validator: z.function().args(z.any()).returns(z.boolean()).optional(),
+    validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
+    default: z.string().optional(),
 });
 
 const dateField = z.object({
@@ -34,7 +37,8 @@ const dateField = z.object({
     title: z.string(),
     description: z.string(),
     required: z.boolean().optional(),
-    validator: z.function().args(z.any()).returns(z.boolean()).optional(),
+    validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
+    default: z.string().optional(),
 });
 
 const timeField = z.object({
@@ -42,7 +46,8 @@ const timeField = z.object({
     title: z.string(),
     description: z.string(),
     required: z.boolean().optional(),
-    validator: z.function().args(z.any()).returns(z.boolean()).optional(),
+    validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
+    default: z.string().optional(),
 });
 
 const dataUrlField = z.object({
@@ -50,7 +55,8 @@ const dataUrlField = z.object({
     title: z.string(),
     description: z.string(),
     required: z.boolean().optional(),
-    validator: z.function().args(z.any()).returns(z.boolean()).optional(),
+    validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
+    default: z.string().optional(),
 });
 
 // Select input as a select box (dropdown)
@@ -64,7 +70,8 @@ const selectField = z.object({
         value: z.string(),
     })).min(1, { message: "At least one option is required" }),
     required: z.boolean().optional(),
-    validator: z.function().args(z.any()).returns(z.boolean()).optional(),
+    validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
+    default: z.string().optional(),
 });
 
 // Radio input as a group of radio buttons
@@ -78,7 +85,8 @@ const radioField = z.object({
         value: z.string(),
     })).min(1, { message: "At least one option is required" }),
     required: z.boolean().optional(),
-    validator: z.function().args(z.any()).returns(z.boolean()).optional(),
+    validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
+    default: z.string().optional(),
 });
 
 // ----------------------------------------
@@ -91,25 +99,13 @@ const simpleNumberField = z.object({
     title: z.string(),
     description: z.string(),
     required: z.boolean().optional(),
-    validator: z.function().args(z.any()).returns(z.boolean()).optional(),
+    validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
+    default: z.number().optional(),
 }).refine(
     data => !("minimum" in data) && !("maximum" in data),
     { message: "Simple number field should not have minimum or maximum" }
 );
 
-// Number field as a range slider (must include minimum and maximum)
-const rangeField = z.object({
-    type: z.literal("number"),
-    title: z.string(),
-    description: z.string(),
-    minimum: z.number(),
-    maximum: z.number(),
-    required: z.boolean().optional(),
-    validator: z.function().args(z.any()).returns(z.boolean()).optional(),
-}).refine(
-    data => data.maximum >= data.minimum || data.maximum === undefined || data.minimum === undefined,
-    { message: "Maximum must be greater than or equal to minimum" }
-);
 
 // ----------------------------------------
 // Boolean field
@@ -119,7 +115,8 @@ const booleanField = z.object({
     title: z.string(),
     description: z.string(),
     required: z.boolean().optional(),
-    validator: z.function().args(z.any()).returns(z.boolean()).optional(),
+    validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
+    default: z.boolean().optional(),
 });
 
 const checkboxField = z.object({
@@ -127,14 +124,14 @@ const checkboxField = z.object({
     title: z.string(),
     description: z.string(),
     required: z.boolean().optional(),
-    validator: z.function().args(z.any()).returns(z.boolean()).optional(),
+    validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
+    default: z.boolean().optional(),
 });
 
 // ----------------------------------------
 // Combined property schema as a discriminated union
 // ----------------------------------------
 const propertySchema = z.union([
-    // For string fields, we union by checking format and enum presence:
     simpleTextField,
     passwordField,
     emailField,
@@ -143,10 +140,7 @@ const propertySchema = z.union([
     dataUrlField,
     selectField,
     radioField,
-    // For number fields:
-    rangeField,
     simpleNumberField,
-    // For boolean fields:
     booleanField,
     checkboxField,
 ]);
@@ -158,6 +152,8 @@ export const jsonFormSchema = z.object({
     name: z.string().optional(),
     properties: z.record(propertySchema),
     buttons: z.array(z.object({
+        type: z.enum(["submit", "reset", "button"]).optional(),
+        variant: z.string().optional(),
         label: z.string(),
         onClick: z.function().optional(),
         className: z.string().optional(),

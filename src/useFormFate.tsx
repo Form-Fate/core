@@ -1,59 +1,35 @@
-import { useForm, Resolver } from 'react-hook-form';
-import { ZodError } from 'zod';
+import { useForm, UseFormReturn } from 'react-hook-form';
+import { z } from 'zod';
 import { jsonFormSchema } from './form-validator';
-import { useMemo } from 'react';
-import { FormDefinition } from './interfaces';
 
-interface UseDynamicFormProps {
-    formDefinition: FormDefinition;
-    onSubmit: (data: Record<string, unknown>) => void;
-}
+// Type from Zod schema
+export type FormDefinition = z.infer<typeof jsonFormSchema>;
 
-export const useFormFate = ({ formDefinition, onSubmit }: UseDynamicFormProps) => {
-    const validatedSchema = useMemo(() => {
-        try {
-            return jsonFormSchema.parse(formDefinition);
-        } catch (error) {
-            console.error('Invalid form schema provided to useDynamicForm:', error);
-            throw error;
-        }
-    }, [formDefinition]);
+export function useFormFate(formDefinition: unknown): UseFormReturn<Record<string, unknown>> {
+    // Validate the form definition using the JSON schema
+    const parseResult = jsonFormSchema.safeParse(formDefinition);
+    if (!parseResult.success) {
+        throw new Error(
+            `Invalid form definition: ${JSON.stringify(
+                parseResult.error.format(),
+                null,
+                2
+            )}`
+        );
+    }
 
-    // Custom resolver using the validated schema
-    const resolver: Resolver = async () => {
-        try {
-            const parsedData = jsonFormSchema.parse(formDefinition);
-            return { values: parsedData, errors: {} };
-        } catch (error) {
-            if (error instanceof ZodError) {
-                return {
-                    values: {},
-                    errors: error.errors.reduce(
-                        (acc, err) => ({
-                            ...acc,
-                            [err.path.join('.')]: { message: err.message }
-                        }),
-                        {} as Record<string, { message: string }>
-                    ),
-                };
+    const defaultValues = Object.keys(parseResult.data.properties).reduce(
+        (acc, key) => {
+            if (parseResult.data.properties[key].default) {
+                acc[key] = parseResult.data.properties[key].default;
             }
-            console.error('Unexpected validation error:', error);
-            return { values: {}, errors: {} };
-        }
-    };
+            return acc;
+        },
+        {} as Record<string, unknown>
+    );
 
-    // Initialize React Hook Form.
-    const { register, getValues, setValue, formState: { errors, validatingFields, isValid, isValidating } } = useForm({ resolver });
-
-    return {
-        validatedSchema,
-        register,
-        getValues,
-        setValue,
-        errors,
-        onSubmit,
-        validatingFields,
-        isValid,
-        isValidating
-    };
-};
+    // Create the react-hook-form instance using useForm
+    return useForm<Record<string, unknown>>({
+        defaultValues,
+    });
+}      
