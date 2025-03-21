@@ -15,8 +15,12 @@ const simpleTextField = z.object({
     conditional: z.object({
         field: z.string(),
         state: z.boolean(),
-        value: z.string(),
-    }).optional(),
+        equal: z.string().optional(),
+        notEqual: z.string().optional(),
+    }).refine(
+        data => !(data.equal && data.notEqual),
+        { message: "Only one of 'equal' or 'notEqual' can be set" }
+    ).optional(),
     minLength: z.number().optional(),
     maxLength: z.number().optional(),
     pattern: z.string().optional(),
@@ -32,8 +36,12 @@ const passwordField = z.object({
     conditional: z.object({
         field: z.string(),
         state: z.boolean(),
-        value: z.string(),
-    }).optional(),
+        equal: z.string().optional(),
+        notEqual: z.string().optional(),
+    }).refine(
+        data => !(data.equal && data.notEqual),
+        { message: "Only one of 'equal' or 'notEqual' can be set" }
+    ).optional(),
     minLength: z.number().optional(),
     maxLength: z.number().optional(),
     pattern: z.string().optional(),
@@ -49,8 +57,12 @@ const emailField = z.object({
     conditional: z.object({
         field: z.string(),
         state: z.boolean(),
-        value: z.string(),
-    }).optional(),
+        equal: z.string().optional(),
+        notEqual: z.string().optional(),
+    }).refine(
+        data => !(data.equal && data.notEqual),
+        { message: "Only one of 'equal' or 'notEqual' can be set" }
+    ).optional(),
 });
 
 const dateField = z.object({
@@ -63,8 +75,12 @@ const dateField = z.object({
     conditional: z.object({
         field: z.string(),
         state: z.boolean(),
-        value: z.string(),
-    }).optional(),
+        equal: z.string().optional(),
+        notEqual: z.string().optional(),
+    }).refine(
+        data => !(data.equal && data.notEqual),
+        { message: "Only one of 'equal' or 'notEqual' can be set" }
+    ).optional(),
 });
 
 const timeField = z.object({
@@ -77,8 +93,12 @@ const timeField = z.object({
     conditional: z.object({
         field: z.string(),
         state: z.boolean(),
-        value: z.string(),
-    }).optional(),
+        equal: z.string().optional(),
+        notEqual: z.string().optional(),
+    }).refine(
+        data => !(data.equal && data.notEqual),
+        { message: "Only one of 'equal' or 'notEqual' can be set" }
+    ).optional(),
 });
 
 const dataUrlField = z.object({
@@ -91,8 +111,12 @@ const dataUrlField = z.object({
     conditional: z.object({
         field: z.string(),
         state: z.boolean(),
-        value: z.string(),
-    }).optional(),
+        equal: z.string().optional(),
+        notEqual: z.string().optional(),
+    }).refine(
+        data => !(data.equal && data.notEqual),
+        { message: "Only one of 'equal' or 'notEqual' can be set" }
+    ).optional(),
 });
 
 // Select input as a select box (dropdown)
@@ -111,8 +135,12 @@ const selectField = z.object({
     conditional: z.object({
         field: z.string(),
         state: z.boolean(),
-        value: z.string(),
-    }).optional(),
+        equal: z.string().optional(),
+        notEqual: z.string().optional(),
+    }).refine(
+        data => !(data.equal && data.notEqual),
+        { message: "Only one of 'equal' or 'notEqual' can be set" }
+    ).optional(),
 });
 
 // Radio input as a group of radio buttons
@@ -131,8 +159,12 @@ const radioField = z.object({
     conditional: z.object({
         field: z.string(),
         state: z.boolean(),
-        value: z.string(),
-    }).optional(),
+        equal: z.string().optional(),
+        notEqual: z.string().optional(),
+    }).refine(
+        data => !(data.equal && data.notEqual),
+        { message: "Only one of 'equal' or 'notEqual' can be set" }
+    ).optional(),
 });
 
 // ----------------------------------------
@@ -150,8 +182,12 @@ const simpleNumberField = z.object({
     conditional: z.object({
         field: z.string(),
         state: z.boolean(),
-        value: z.string(),
-    }).optional(),
+        equal: z.string().optional(),
+        notEqual: z.string().optional(),
+    }).refine(
+        data => !(data.equal && data.notEqual),
+        { message: "Only one of 'equal' or 'notEqual' can be set" }
+    ).optional(),
     minimum: z.number().optional(),
     maximum: z.number().optional(),
 }).refine(
@@ -173,8 +209,12 @@ const booleanField = z.object({
     conditional: z.object({
         field: z.string(),
         state: z.boolean(),
-        value: z.string(),
-    }).optional(),
+        equal: z.string().optional(),
+        notEqual: z.string().optional(),
+    }).refine(
+        data => !(data.equal && data.notEqual),
+        { message: "Only one of 'equal' or 'notEqual' can be set" }
+    ).optional(),
 });
 
 const checkboxField = z.object({
@@ -187,8 +227,12 @@ const checkboxField = z.object({
     conditional: z.object({
         field: z.string(),
         state: z.boolean(),
-        value: z.string(),
-    }).optional(),
+        equal: z.string().optional(),
+        notEqual: z.string().optional(),
+    }).refine(
+        data => !(data.equal && data.notEqual),
+        { message: "Only one of 'equal' or 'notEqual' can be set" }
+    ).optional(),
 });
 
 // ----------------------------------------
