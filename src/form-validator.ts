@@ -12,6 +12,14 @@ const simpleTextField = z.object({
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.string().optional(),
+    conditional: z.object({
+        field: z.string(),
+        state: z.boolean(),
+        value: z.string(),
+    }).optional(),
+    minLength: z.number().optional(),
+    maxLength: z.number().optional(),
+    pattern: z.string().optional(),
 });
 
 const passwordField = z.object({
@@ -21,6 +29,14 @@ const passwordField = z.object({
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.string().optional(),
+    conditional: z.object({
+        field: z.string(),
+        state: z.boolean(),
+        value: z.string(),
+    }).optional(),
+    minLength: z.number().optional(),
+    maxLength: z.number().optional(),
+    pattern: z.string().optional(),
 });
 
 const emailField = z.object({
@@ -30,6 +46,11 @@ const emailField = z.object({
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.string().optional(),
+    conditional: z.object({
+        field: z.string(),
+        state: z.boolean(),
+        value: z.string(),
+    }).optional(),
 });
 
 const dateField = z.object({
@@ -39,6 +60,11 @@ const dateField = z.object({
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.string().optional(),
+    conditional: z.object({
+        field: z.string(),
+        state: z.boolean(),
+        value: z.string(),
+    }).optional(),
 });
 
 const timeField = z.object({
@@ -48,6 +74,11 @@ const timeField = z.object({
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.string().optional(),
+    conditional: z.object({
+        field: z.string(),
+        state: z.boolean(),
+        value: z.string(),
+    }).optional(),
 });
 
 const dataUrlField = z.object({
@@ -57,6 +88,11 @@ const dataUrlField = z.object({
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.string().optional(),
+    conditional: z.object({
+        field: z.string(),
+        state: z.boolean(),
+        value: z.string(),
+    }).optional(),
 });
 
 // Select input as a select box (dropdown)
@@ -72,6 +108,11 @@ const selectField = z.object({
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.string().optional(),
+    conditional: z.object({
+        field: z.string(),
+        state: z.boolean(),
+        value: z.string(),
+    }).optional(),
 });
 
 // Radio input as a group of radio buttons
@@ -87,6 +128,11 @@ const radioField = z.object({
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.string().optional(),
+    conditional: z.object({
+        field: z.string(),
+        state: z.boolean(),
+        value: z.string(),
+    }).optional(),
 });
 
 // ----------------------------------------
@@ -101,6 +147,13 @@ const simpleNumberField = z.object({
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.number().optional(),
+    conditional: z.object({
+        field: z.string(),
+        state: z.boolean(),
+        value: z.string(),
+    }).optional(),
+    minimum: z.number().optional(),
+    maximum: z.number().optional(),
 }).refine(
     data => !("minimum" in data) && !("maximum" in data),
     { message: "Simple number field should not have minimum or maximum" }
@@ -117,6 +170,11 @@ const booleanField = z.object({
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.boolean().optional(),
+    conditional: z.object({
+        field: z.string(),
+        state: z.boolean(),
+        value: z.string(),
+    }).optional(),
 });
 
 const checkboxField = z.object({
@@ -126,6 +184,11 @@ const checkboxField = z.object({
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.boolean().optional(),
+    conditional: z.object({
+        field: z.string(),
+        state: z.boolean(),
+        value: z.string(),
+    }).optional(),
 });
 
 // ----------------------------------------
