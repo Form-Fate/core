@@ -240,8 +240,7 @@ const checkboxField = z.object({
 // ----------------------------------------
 const customField = z.object({
     type: z.string(), // User-defined type
-    title: z.string(),
-    component: z.any(), // User-defined component
+    title: z.string()
 }).passthrough(); // Allows additional properties at the same level
 
 
