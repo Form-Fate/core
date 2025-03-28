@@ -1,6 +1,6 @@
 {
   "name": "formfatecore",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "React Hook Form context for form generating libraries",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -23,10 +23,7 @@
     "url": "git+https://github.com/Form-Fate/core.git"
   },
   "author": "hajalimazen__",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Form-Fate/core/issues"
-  },
+  "license": "MIT",
   "homepage": "https://github.com/Form-Fate/core#readme",
   "peerDependencies": {
     "react": ">=17.0.0",

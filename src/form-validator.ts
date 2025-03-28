@@ -236,6 +236,15 @@ const checkboxField = z.object({
 });
 
 // ----------------------------------------
+// Custom Field (User-defined type and properties)
+// ----------------------------------------
+const customField = z.object({
+    type: z.string(), // User-defined type
+    title: z.string(),
+}).passthrough(); // Allows additional properties at the same level
+
+
+// ----------------------------------------
 // Combined property schema as a discriminated union
 // ----------------------------------------
 const propertySchema = z.union([
@@ -250,6 +259,8 @@ const propertySchema = z.union([
     simpleNumberField,
     booleanField,
     checkboxField,
+    customField, // <<---- Custom Field
+
 ]);
 
 // ----------------------------------------
