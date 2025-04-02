@@ -7,7 +7,7 @@ import { z } from 'zod';
 // Simple text input (no format and no enum)
 const simpleTextField = z.object({
     type: z.literal("text"),
-    title: z.string(),
+    title: z.string().optional(),
     description: z.string().optional(),
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
@@ -28,7 +28,7 @@ const simpleTextField = z.object({
 
 const passwordField = z.object({
     type: z.literal("password"),
-    title: z.string(),
+    title: z.string().optional(),
     description: z.string().optional(),
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
@@ -49,7 +49,7 @@ const passwordField = z.object({
 
 const emailField = z.object({
     type: z.literal("email"),
-    title: z.string(),
+    title: z.string().optional(),
     description: z.string().optional(),
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
@@ -67,7 +67,7 @@ const emailField = z.object({
 
 const dateField = z.object({
     type: z.literal("date"),
-    title: z.string(),
+    title: z.string().optional(),
     description: z.string().optional(),
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
@@ -85,7 +85,7 @@ const dateField = z.object({
 
 const timeField = z.object({
     type: z.literal("time"),
-    title: z.string(),
+    title: z.string().optional(),
     description: z.string().optional(),
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
@@ -103,7 +103,7 @@ const timeField = z.object({
 
 const dataUrlField = z.object({
     type: z.literal("url"),
-    title: z.string(),
+    title: z.string().optional(),
     description: z.string().optional(),
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
@@ -123,7 +123,7 @@ const dataUrlField = z.object({
 // Must include an options array with at least one option.
 const selectField = z.object({
     type: z.literal("select"),
-    title: z.string(),
+    title: z.string().optional(),
     description: z.string().optional(),
     options: z.array(z.object({
         label: z.string(),
@@ -147,7 +147,7 @@ const selectField = z.object({
 // Must include an options array with at least one option.
 const radioField = z.object({
     type: z.literal("radio"),
-    title: z.string(),
+    title: z.string().optional(),
     description: z.string().optional(),
     options: z.array(z.object({
         label: z.string(),
@@ -174,7 +174,7 @@ const radioField = z.object({
 // Simple number field without range restrictions
 const simpleNumberField = z.object({
     type: z.literal("number"),
-    title: z.string(),
+    title: z.string().optional(),
     description: z.string().optional(),
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
@@ -201,7 +201,7 @@ const simpleNumberField = z.object({
 // ----------------------------------------
 const booleanField = z.object({
     type: z.literal("boolean"),
-    title: z.string(),
+    title: z.string().optional(),
     description: z.string().optional(),
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
@@ -219,7 +219,7 @@ const booleanField = z.object({
 
 const checkboxField = z.object({
     type: z.literal("checkbox"),
-    title: z.string(),
+    title: z.string().optional(),
     description: z.string().optional(),
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
@@ -240,7 +240,7 @@ const checkboxField = z.object({
 // ----------------------------------------
 const customField = z.object({
     type: z.string(), // User-defined type
-    title: z.string()
+    title: z.string().optional(),
 }).passthrough(); // Allows additional properties at the same level
 
 
