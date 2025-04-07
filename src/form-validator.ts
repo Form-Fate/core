@@ -1,6 +1,16 @@
 import { z } from 'zod';
 
 // ----------------------------------------
+// Styling extension for React and React Native
+// ----------------------------------------
+// This is a generic styling extension that can be used for both React and React Native
+
+const stylingExtension = {
+    className: z.string().optional(), // for React (web)
+    style: z.any().optional(),        // for React Native (style object)
+};
+
+// ----------------------------------------
 // Field variants for string-based inputs
 // ----------------------------------------
 
@@ -24,7 +34,7 @@ const simpleTextField = z.object({
     minLength: z.number().optional(),
     maxLength: z.number().optional(),
     pattern: z.string().optional(),
-});
+}).extend(stylingExtension);
 
 const passwordField = z.object({
     type: z.literal("password"),
@@ -45,7 +55,7 @@ const passwordField = z.object({
     minLength: z.number().optional(),
     maxLength: z.number().optional(),
     pattern: z.string().optional(),
-});
+}).extend(stylingExtension);
 
 const emailField = z.object({
     type: z.literal("email"),
@@ -63,7 +73,7 @@ const emailField = z.object({
         data => !(data.equal && data.notEqual),
         { message: "Only one of 'equal' or 'notEqual' can be set" }
     ).optional(),
-});
+}).extend(stylingExtension);
 
 const dateField = z.object({
     type: z.literal("date"),
@@ -81,7 +91,7 @@ const dateField = z.object({
         data => !(data.equal && data.notEqual),
         { message: "Only one of 'equal' or 'notEqual' can be set" }
     ).optional(),
-});
+}).extend(stylingExtension);
 
 const timeField = z.object({
     type: z.literal("time"),
@@ -99,7 +109,7 @@ const timeField = z.object({
         data => !(data.equal && data.notEqual),
         { message: "Only one of 'equal' or 'notEqual' can be set" }
     ).optional(),
-});
+}).extend(stylingExtension);
 
 const dataUrlField = z.object({
     type: z.literal("url"),
@@ -117,7 +127,7 @@ const dataUrlField = z.object({
         data => !(data.equal && data.notEqual),
         { message: "Only one of 'equal' or 'notEqual' can be set" }
     ).optional(),
-});
+}).extend(stylingExtension);
 
 // Select input as a select box (dropdown)
 // Must include an options array with at least one option.
@@ -141,7 +151,7 @@ const selectField = z.object({
         data => !(data.equal && data.notEqual),
         { message: "Only one of 'equal' or 'notEqual' can be set" }
     ).optional(),
-});
+}).extend(stylingExtension);
 
 // Radio input as a group of radio buttons
 // Must include an options array with at least one option.
@@ -165,7 +175,7 @@ const radioField = z.object({
         data => !(data.equal && data.notEqual),
         { message: "Only one of 'equal' or 'notEqual' can be set" }
     ).optional(),
-});
+}).extend(stylingExtension);
 
 // ----------------------------------------
 // Field variants for number-based inputs
@@ -190,10 +200,12 @@ const simpleNumberField = z.object({
     ).optional(),
     minimum: z.number().optional(),
     maximum: z.number().optional(),
-}).refine(
-    data => !("minimum" in data) && !("maximum" in data),
-    { message: "Simple number field should not have minimum or maximum" }
-);
+})
+    .extend(stylingExtension)
+    .refine(
+        data => !("minimum" in data) && !("maximum" in data),
+        { message: "Simple number field should not have minimum or maximum" }
+    );
 
 
 // ----------------------------------------
@@ -233,7 +245,7 @@ const checkboxField = z.object({
         data => !(data.equal && data.notEqual),
         { message: "Only one of 'equal' or 'notEqual' can be set" }
     ).optional(),
-});
+}).extend(stylingExtension);
 
 // ----------------------------------------
 // Custom Field (User-defined type and properties)
@@ -241,8 +253,34 @@ const checkboxField = z.object({
 const customField = z.object({
     type: z.string(), // User-defined type
     title: z.string().optional(),
-}).passthrough(); // Allows additional properties at the same level
+}).extend(stylingExtension).passthrough(); // Allows additional properties at the same level
 
+// ----------------------------------------
+// Block field (nested structure)
+// ----------------------------------------
+// This is a recursive structure that can contain other fields or blocks
+// The "properties" field can contain any of the defined fields or another block
+
+const blockField: z.ZodType<any> = z.lazy(() =>
+    z.object({
+        type: z.literal("block"),
+        title: z.string().optional(),
+        description: z.string().optional(),
+        properties: z.record(z.union([
+            blockField,     // nested block
+            propertySchema, // any valid field
+        ])),
+        conditional: z.object({
+            field: z.string(),
+            state: z.boolean(),
+            equal: z.string().optional(),
+            notEqual: z.string().optional(),
+        }).refine(
+            data => !(data.equal && data.notEqual),
+            { message: "Only one of 'equal' or 'notEqual' can be set" }
+        ).optional(),
+    }).extend(stylingExtension)
+);
 
 // ----------------------------------------
 // Combined property schema as a discriminated union
@@ -260,7 +298,7 @@ const propertySchema = z.union([
     booleanField,
     checkboxField,
     customField, // <<---- Custom Field
-
+    blockField, // <<---- Block Field
 ]);
 
 // ----------------------------------------
