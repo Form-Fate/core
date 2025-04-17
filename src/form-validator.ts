@@ -11,10 +11,42 @@ const stylingExtension = {
 };
 
 // ----------------------------------------
-// Field variants for string-based inputs
+// URL options schema for fetching data
 // ----------------------------------------
 
+const optionsUrlSchema = z.object({
+    url: z.string().url({ message: "Must be a valid URL" }),
+    method: z.enum(["GET", "POST"]).optional(),
+    headers: z.record(z.string()).optional(),
+    params: z.record(z.union([z.string(), z.number(), z.boolean()]).transform(String)).optional(),
+    body: z.any().optional(), // For POST requests
+});
+
+// ----------------------------------------
+// Conditional schema for field visibility
+// ----------------------------------------
+// This schema is used to determine if a field should be displayed based on the state of another field
+
+const conditionalSchema = z.union([
+    z.object({
+        field: z.string(),
+        state: z.boolean(),
+        equal: z.string().optional(),
+        notEqual: z.string().optional(),
+    }).refine(
+        data => !(data.equal && data.notEqual),
+        { message: "Only one of 'equal' or 'notEqual' can be set" }
+    ),
+    z.function()
+        .args(z.any())
+        .returns(z.boolean())
+]);
+
+// ----------------------------------------
+// Field variants for string-based inputs
+// ----------------------------------------
 // Simple text input (no format and no enum)
+
 const simpleTextField = z.object({
     type: z.literal("text"),
     title: z.string().optional(),
@@ -22,58 +54,26 @@ const simpleTextField = z.object({
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.string().optional(),
-    conditional: z.object({
-        field: z.string(), // the field name to watch
-        state: z.boolean(), // the state to watch for
-        equal: z.string().optional(), // the value to watch for to be equal to the field value
-        notEqual: z.string().optional(), // the value to watch for to be not equal to the field value
-    }).refine(
-        data => !(data.equal && data.notEqual),
-        { message: "Only one of 'equal' or 'notEqual' can be set" }
-    ).optional(),
-    minLength: z.number().optional(),
-    maxLength: z.number().optional(),
+    minLength: z.number().min(0, { message: "Minimum length must be at least 0" }).optional(),
+    maxLength: z.number().min(1, { message: "Maximum length must be at least 1" }).optional(),
     pattern: z.string().optional(),
-}).extend(stylingExtension);
+    conditional: conditionalSchema.optional(),
+    disable: z.union([
+        z.boolean(),
+        z.function().args(z.any()).returns(z.boolean()),
+    ]).optional(),
+})
+    .extend(stylingExtension)
+    .superRefine((data, ctx) => {
+        if (data.minLength && data.maxLength && data.minLength > data.maxLength) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "minLength cannot be greater than maxLength",
+                path: ['minLength'],
+            });
+        }
+    });
 
-const passwordField = z.object({
-    type: z.literal("password"),
-    title: z.string().optional(),
-    description: z.string().optional(),
-    required: z.boolean().optional(),
-    validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
-    default: z.string().optional(),
-    conditional: z.object({
-        field: z.string(),
-        state: z.boolean(),
-        equal: z.string().optional(),
-        notEqual: z.string().optional(),
-    }).refine(
-        data => !(data.equal && data.notEqual),
-        { message: "Only one of 'equal' or 'notEqual' can be set" }
-    ).optional(),
-    minLength: z.number().optional(),
-    maxLength: z.number().optional(),
-    pattern: z.string().optional(),
-}).extend(stylingExtension);
-
-const emailField = z.object({
-    type: z.literal("email"),
-    title: z.string().optional(),
-    description: z.string().optional(),
-    required: z.boolean().optional(),
-    validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
-    default: z.string().optional(),
-    conditional: z.object({
-        field: z.string(),
-        state: z.boolean(),
-        equal: z.string().optional(),
-        notEqual: z.string().optional(),
-    }).refine(
-        data => !(data.equal && data.notEqual),
-        { message: "Only one of 'equal' or 'notEqual' can be set" }
-    ).optional(),
-}).extend(stylingExtension);
 
 const dateField = z.object({
     type: z.literal("date"),
@@ -118,15 +118,11 @@ const dataUrlField = z.object({
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.string().optional(),
-    conditional: z.object({
-        field: z.string(),
-        state: z.boolean(),
-        equal: z.string().optional(),
-        notEqual: z.string().optional(),
-    }).refine(
-        data => !(data.equal && data.notEqual),
-        { message: "Only one of 'equal' or 'notEqual' can be set" }
-    ).optional(),
+    conditional: conditionalSchema.optional(),
+    disable: z.union([
+        z.boolean(),
+        z.function().args(z.any()).returns(z.boolean()),
+    ]).optional(),
 }).extend(stylingExtension);
 
 // Select input as a select box (dropdown)
@@ -139,18 +135,16 @@ const selectField = z.object({
         label: z.string(),
         value: z.string(),
     })).min(1, { message: "At least one option is required" }),
+    optionsUrl: optionsUrlSchema.optional(), // URL to fetch options from
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.string().optional(),
-    conditional: z.object({
-        field: z.string(),
-        state: z.boolean(),
-        equal: z.string().optional(),
-        notEqual: z.string().optional(),
-    }).refine(
-        data => !(data.equal && data.notEqual),
-        { message: "Only one of 'equal' or 'notEqual' can be set" }
-    ).optional(),
+    multiple: z.boolean().optional(), // Allow multiple selections
+    conditional: conditionalSchema.optional(),
+    disable: z.union([
+        z.boolean(),
+        z.function().args(z.any()).returns(z.boolean()),
+    ]).optional(),
 }).extend(stylingExtension);
 
 // Radio input as a group of radio buttons
@@ -163,25 +157,22 @@ const radioField = z.object({
         label: z.string(),
         value: z.string(),
     })).min(1, { message: "At least one option is required" }),
+    optionsUrl: optionsUrlSchema.optional(), // URL to fetch options from
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.string().optional(),
-    conditional: z.object({
-        field: z.string(),
-        state: z.boolean(),
-        equal: z.string().optional(),
-        notEqual: z.string().optional(),
-    }).refine(
-        data => !(data.equal && data.notEqual),
-        { message: "Only one of 'equal' or 'notEqual' can be set" }
-    ).optional(),
+    conditional: conditionalSchema.optional(),
+    disable: z.union([
+        z.boolean(),
+        z.function().args(z.any()).returns(z.boolean()),
+    ]).optional(),
 }).extend(stylingExtension);
 
 // ----------------------------------------
 // Field variants for number-based inputs
 // ----------------------------------------
-
 // Simple number field without range restrictions
+
 const simpleNumberField = z.object({
     type: z.literal("number"),
     title: z.string().optional(),
@@ -189,15 +180,11 @@ const simpleNumberField = z.object({
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.number().optional(),
-    conditional: z.object({
-        field: z.string(),
-        state: z.boolean(),
-        equal: z.string().optional(),
-        notEqual: z.string().optional(),
-    }).refine(
-        data => !(data.equal && data.notEqual),
-        { message: "Only one of 'equal' or 'notEqual' can be set" }
-    ).optional(),
+    conditional: conditionalSchema.optional(),
+    disable: z.union([
+        z.boolean(),
+        z.function().args(z.any()).returns(z.boolean()),
+    ]).optional(),
     minimum: z.number().optional(),
     maximum: z.number().optional(),
 })
@@ -211,6 +198,7 @@ const simpleNumberField = z.object({
 // ----------------------------------------
 // Boolean field
 // ----------------------------------------
+
 const booleanField = z.object({
     type: z.literal("boolean"),
     title: z.string().optional(),
@@ -218,16 +206,12 @@ const booleanField = z.object({
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.boolean().optional(),
-    conditional: z.object({
-        field: z.string(),
-        state: z.boolean(),
-        equal: z.string().optional(),
-        notEqual: z.string().optional(),
-    }).refine(
-        data => !(data.equal && data.notEqual),
-        { message: "Only one of 'equal' or 'notEqual' can be set" }
-    ).optional(),
-});
+    conditional: conditionalSchema.optional(),
+    disable: z.union([
+        z.boolean(),
+        z.function().args(z.any()).returns(z.boolean()),
+    ]).optional(),
+}).extend(stylingExtension);
 
 const checkboxField = z.object({
     type: z.literal("checkbox"),
@@ -236,59 +220,28 @@ const checkboxField = z.object({
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.boolean().optional(),
-    conditional: z.object({
-        field: z.string(),
-        state: z.boolean(),
-        equal: z.string().optional(),
-        notEqual: z.string().optional(),
-    }).refine(
-        data => !(data.equal && data.notEqual),
-        { message: "Only one of 'equal' or 'notEqual' can be set" }
-    ).optional(),
+    conditional: conditionalSchema.optional(),
+    disable: z.union([
+        z.boolean(),
+        z.function().args(z.any()).returns(z.boolean()),
+    ]).optional(),
 }).extend(stylingExtension);
 
 // ----------------------------------------
 // Custom Field (User-defined type and properties)
 // ----------------------------------------
+
 const customField = z.object({
     type: z.string(), // User-defined type
     title: z.string().optional(),
 }).extend(stylingExtension).passthrough(); // Allows additional properties at the same level
 
-// ----------------------------------------
-// Block field (nested structure)
-// ----------------------------------------
-// This is a recursive structure that can contain other fields or blocks
-// The "properties" field can contain any of the defined fields or another block
-
-const blockField: z.ZodType<any> = z.lazy(() =>
-    z.object({
-        type: z.literal("block"),
-        title: z.string().optional(),
-        description: z.string().optional(),
-        properties: z.record(z.union([
-            blockField,     // nested block
-            propertySchema, // any valid field
-        ])),
-        conditional: z.object({
-            field: z.string(),
-            state: z.boolean(),
-            equal: z.string().optional(),
-            notEqual: z.string().optional(),
-        }).refine(
-            data => !(data.equal && data.notEqual),
-            { message: "Only one of 'equal' or 'notEqual' can be set" }
-        ).optional(),
-    }).extend(stylingExtension)
-);
 
 // ----------------------------------------
 // Combined property schema as a discriminated union
 // ----------------------------------------
-const propertySchema = z.union([
+const propertySchema: z.ZodType<any> = z.lazy(() => z.union([
     simpleTextField,
-    passwordField,
-    emailField,
     dateField,
     timeField,
     dataUrlField,
@@ -299,7 +252,21 @@ const propertySchema = z.union([
     checkboxField,
     customField, // <<---- Custom Field
     blockField, // <<---- Block Field
-]);
+]));
+
+// ----------------------------------------
+// Block field (nested structure)
+// ----------------------------------------
+// This is a recursive structure that can contain other fields or blocks
+// The "properties" field can contain any of the defined fields or another block
+
+const blockField: z.ZodType<any> = z.object({
+    type: z.literal("block"),
+    title: z.string().optional(),
+    description: z.string().optional(),
+    properties: z.record(propertySchema), // Nested properties
+    conditional: conditionalSchema.optional(),
+}).extend(stylingExtension);
 
 // ----------------------------------------
 // Overall JSON schema validator for a form

@@ -10,13 +10,8 @@ export function useFormFate(formDefinition: Record<string, unknown>): UseFormRet
     // Validate the form definition using the JSON schema
     const parseResult = jsonFormSchema.safeParse(formDefinition);
     if (!parseResult.success) {
-        throw new Error(
-            `Invalid form definition: ${JSON.stringify(
-                parseResult.error.format(),
-                null,
-                2
-            )}`
-        );
+        console.error("Form validation failed", parseResult.error.flatten());
+        throw new Error(`Invalid form definition: ${JSON.stringify(parseResult.error.format(), null, 2)}`);
     }
 
     const defaultValues = formDefinition.properties ? extractDefaults(formDefinition) : {};

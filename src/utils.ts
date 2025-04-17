@@ -1,7 +1,7 @@
 export const extractDefaults = (schema: Record<string, any>): Record<string, unknown> => {
-    const result: Record<string, unknown> = {};
+    const walk = (properties: Record<string, any>): Record<string, unknown> => {
+        const result: Record<string, unknown> = {};
 
-    const walk = (properties: Record<string, any>) => {
         for (const key in properties) {
             const prop = properties[key];
 
@@ -9,15 +9,17 @@ export const extractDefaults = (schema: Record<string, any>): Record<string, unk
                 result[key] = prop.default;
             }
 
-            if (prop.properties) {
-                walk(prop.properties);
+            if (prop.type === 'block' && prop.properties) {
+                result[key] = walk(prop.properties); // Recursively build nested object
             }
         }
+
+        return result;
     };
 
-    if (schema.properties) {
-        walk(schema.properties);
+    if (!schema.properties) {
+        return {};
     }
 
-    return result;
+    return walk(schema.properties);
 };
