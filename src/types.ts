@@ -20,4 +20,4 @@ export type selectFieldInterface = z.infer<typeof selectField>;
 export type simpleNumberFieldInterface = z.infer<typeof simpleNumberField>;
 export type simpleTextFieldInterface = z.infer<typeof simpleTextField>;
 export type timeFieldInterface = z.infer<typeof timeField>;
-export type formFieldInterface = blockFieldInterface | booleanFieldInterface | checkboxFieldInterface | conditionalSchemaInterface | customFieldInterface | dataUrlFieldInterface | dateFieldInterface | optionsUrlSchemaInterface | radioFieldInterface | selectFieldInterface | simpleNumberFieldInterface | simpleTextFieldInterface | stylingExtensionInterface | timeFieldInterface;
+export type formFieldInterface = blockFieldInterface | booleanFieldInterface | checkboxFieldInterface | conditionalSchemaInterface | customFieldInterface | dataUrlFieldInterface | dateFieldInterface | optionsUrlSchemaInterface | radioFieldInterface | selectFieldInterface | simpleNumberFieldInterface | simpleTextFieldInterface | timeFieldInterface;
