@@ -5,7 +5,7 @@ import { z } from 'zod';
 // ----------------------------------------
 // This is a generic styling extension that can be used for both React and React Native
 
-const stylingExtension = {
+export const stylingExtension = {
     className: z.string().optional(), // for React (web)
     style: z.any().optional(),        // for React Native (style object)
 };
@@ -14,7 +14,7 @@ const stylingExtension = {
 // URL options schema for fetching data
 // ----------------------------------------
 
-const optionsUrlSchema = z.object({
+export const optionsUrlSchema = z.object({
     url: z.string().url({ message: "Must be a valid URL" }),
     method: z.enum(["GET", "POST"]).optional(),
     headers: z.record(z.string()).optional(),
@@ -28,7 +28,7 @@ const optionsUrlSchema = z.object({
 // ----------------------------------------
 // This schema is used to determine if a field should be displayed based on the state of another field
 
-const conditionalSchema = z.union([
+export const conditionalSchema = z.union([
     z.object({
         field: z.string(),
         state: z.boolean(),
@@ -48,13 +48,17 @@ const conditionalSchema = z.union([
 // ----------------------------------------
 // Simple text input (no format and no enum)
 
-const simpleTextField = z.object({
+export const simpleTextField = z.object({
     type: z.literal("text"),
     title: z.string().optional(),
     description: z.string().optional(),
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.string().optional(),
+    valueCallback: z.function()
+        .args(z.record(z.any()))
+        .returns(z.string())
+        .optional(),
     minLength: z.number().min(0, { message: "Minimum length must be at least 0" }).optional(),
     maxLength: z.number().min(1, { message: "Maximum length must be at least 1" }).optional(),
     pattern: z.string().optional(),
@@ -76,13 +80,17 @@ const simpleTextField = z.object({
     });
 
 
-const dateField = z.object({
+export const dateField = z.object({
     type: z.literal("date"),
     title: z.string().optional(),
     description: z.string().optional(),
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.string().optional(),
+    valueCallback: z.function()
+        .args(z.record(z.any()))
+        .returns(z.string())
+        .optional(),
     conditional: z.object({
         field: z.string(),
         state: z.boolean(),
@@ -94,13 +102,17 @@ const dateField = z.object({
     ).optional(),
 }).extend(stylingExtension);
 
-const timeField = z.object({
+export const timeField = z.object({
     type: z.literal("time"),
     title: z.string().optional(),
     description: z.string().optional(),
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.string().optional(),
+    valueCallback: z.function()
+        .args(z.record(z.any()))
+        .returns(z.string())
+        .optional(),
     conditional: z.object({
         field: z.string(),
         state: z.boolean(),
@@ -112,13 +124,17 @@ const timeField = z.object({
     ).optional(),
 }).extend(stylingExtension);
 
-const dataUrlField = z.object({
+export const dataUrlField = z.object({
     type: z.literal("url"),
     title: z.string().optional(),
     description: z.string().optional(),
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.string().optional(),
+    valueCallback: z.function()
+        .args(z.record(z.any()))
+        .returns(z.string())
+        .optional(),
     conditional: conditionalSchema.optional(),
     disable: z.union([
         z.boolean(),
@@ -128,7 +144,7 @@ const dataUrlField = z.object({
 
 // Select input as a select box (dropdown)
 // Must include an options array with at least one option.
-const selectField = z.object({
+export const selectField = z.object({
     type: z.literal("select"),
     title: z.string().optional(),
     description: z.string().optional(),
@@ -140,6 +156,10 @@ const selectField = z.object({
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.string().optional(),
+    valueCallback: z.function()
+        .args(z.record(z.any()))
+        .returns(z.string())
+        .optional(),
     multiple: z.boolean().optional(), // Allow multiple selections
     conditional: conditionalSchema.optional(),
     disable: z.union([
@@ -150,7 +170,7 @@ const selectField = z.object({
 
 // Radio input as a group of radio buttons
 // Must include an options array with at least one option.
-const radioField = z.object({
+export const radioField = z.object({
     type: z.literal("radio"),
     title: z.string().optional(),
     description: z.string().optional(),
@@ -162,6 +182,10 @@ const radioField = z.object({
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.string().optional(),
+    valueCallback: z.function()
+        .args(z.record(z.any()))
+        .returns(z.string())
+        .optional(),
     conditional: conditionalSchema.optional(),
     disable: z.union([
         z.boolean(),
@@ -174,13 +198,17 @@ const radioField = z.object({
 // ----------------------------------------
 // Simple number field without range restrictions
 
-const simpleNumberField = z.object({
+export const simpleNumberField = z.object({
     type: z.literal("number"),
     title: z.string().optional(),
     description: z.string().optional(),
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.number().optional(),
+    valueCallback: z.function()
+        .args(z.record(z.any()))
+        .returns(z.number())
+        .optional(),
     conditional: conditionalSchema.optional(),
     disable: z.union([
         z.boolean(),
@@ -200,13 +228,17 @@ const simpleNumberField = z.object({
 // Boolean field
 // ----------------------------------------
 
-const booleanField = z.object({
+export const booleanField = z.object({
     type: z.literal("boolean"),
     title: z.string().optional(),
     description: z.string().optional(),
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.boolean().optional(),
+    valueCallback: z.function()
+        .args(z.record(z.any()))
+        .returns(z.boolean())
+        .optional(),
     conditional: conditionalSchema.optional(),
     disable: z.union([
         z.boolean(),
@@ -214,13 +246,17 @@ const booleanField = z.object({
     ]).optional(),
 }).extend(stylingExtension);
 
-const checkboxField = z.object({
+export const checkboxField = z.object({
     type: z.literal("checkbox"),
     title: z.string().optional(),
     description: z.string().optional(),
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.boolean().optional(),
+    valueCallback: z.function()
+        .args(z.record(z.any()))
+        .returns(z.boolean())
+        .optional(),
     conditional: conditionalSchema.optional(),
     disable: z.union([
         z.boolean(),
@@ -232,7 +268,7 @@ const checkboxField = z.object({
 // Custom Field (User-defined type and properties)
 // ----------------------------------------
 
-const customField = z.object({
+export const customField = z.object({
     type: z.string(), // User-defined type
     title: z.string().optional(),
 }).extend(stylingExtension).passthrough(); // Allows additional properties at the same level
@@ -261,7 +297,7 @@ const propertySchema: z.ZodType<any> = z.lazy(() => z.union([
 // This is a recursive structure that can contain other fields or blocks
 // The "properties" field can contain any of the defined fields or another block
 
-const blockField: z.ZodType<any> = z.object({
+export const blockField: z.ZodType<any> = z.object({
     type: z.literal("block"),
     title: z.string().optional(),
     description: z.string().optional(),
