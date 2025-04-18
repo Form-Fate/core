@@ -20,6 +20,7 @@ const optionsUrlSchema = z.object({
     headers: z.record(z.string()).optional(),
     params: z.record(z.union([z.string(), z.number(), z.boolean()]).transform(String)).optional(),
     body: z.any().optional(), // For POST requests
+    mapper: z.function().args(z.any()).returns(z.any()).optional(), // Function to transform the response data NB: This should be a synchronous function and takes as argument {response data , form data}
 });
 
 // ----------------------------------------
