@@ -11,6 +11,15 @@ export const stylingExtension = {
 };
 
 // ----------------------------------------
+// Option is an object of label and value
+// ----------------------------------------
+
+export const optionSchema = z.object({
+    label: z.string(),
+    value: z.string(),
+});
+
+// ----------------------------------------
 // URL options schema for fetching data
 // ----------------------------------------
 
@@ -22,6 +31,19 @@ export const optionsUrlSchema = z.object({
     body: z.any().optional(), // For POST requests
     mapper: z.function().args(z.any()).returns(z.any()).optional(), // Function to transform the response data NB: This should be a synchronous function and takes as argument {response data , form data}
 });
+
+// ----------------------------------------
+// Filter function schema for options
+// ----------------------------------------
+// This schema is used to filter options based on the state of another field
+// It can be a function thatt returns a list of options and takes as argument object that contains formValues and options
+
+export const filterFunctionSchema = z.function()
+    .args(z.object({
+        formValues: z.record(z.any()),
+        options: z.array(optionSchema),
+    }))
+    .returns(z.array(optionSchema).optional());
 
 // ----------------------------------------
 // Conditional schema for field visibility
@@ -148,11 +170,9 @@ export const selectField = z.object({
     type: z.literal("select"),
     title: z.string().optional(),
     description: z.string().optional(),
-    options: z.array(z.object({
-        label: z.string(),
-        value: z.string(),
-    })).min(1, { message: "At least one option is required" }),
+    options: z.array(optionSchema).min(1, { message: "At least one option is required" }),
     optionsUrl: optionsUrlSchema.optional(), // URL to fetch options from
+    filterFunction: filterFunctionSchema.optional(), // Function to filter options based on another field's state
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.string().optional(),
@@ -174,11 +194,9 @@ export const radioField = z.object({
     type: z.literal("radio"),
     title: z.string().optional(),
     description: z.string().optional(),
-    options: z.array(z.object({
-        label: z.string(),
-        value: z.string(),
-    })).min(1, { message: "At least one option is required" }),
+    options: z.array(optionSchema).min(1, { message: "At least one option is required" }),
     optionsUrl: optionsUrlSchema.optional(), // URL to fetch options from
+    filterFunction: filterFunctionSchema.optional(), // Function to filter options based on another field's state
     required: z.boolean().optional(),
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.string().optional(),
