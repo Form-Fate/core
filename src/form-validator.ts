@@ -78,8 +78,10 @@ export const simpleTextField = z.object({
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.string().optional(),
     valueCallback: z.function()
-        .args(z.record(z.any()))
-        .returns(z.string())
+        .args(z.object({
+            formValues: z.record(z.any())
+        }))
+        .returns(z.any())
         .optional(),
     minLength: z.number().min(0, { message: "Minimum length must be at least 0" }).optional(),
     maxLength: z.number().min(1, { message: "Maximum length must be at least 1" }).optional(),
@@ -110,8 +112,10 @@ export const dateField = z.object({
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.string().optional(),
     valueCallback: z.function()
-        .args(z.record(z.any()))
-        .returns(z.string())
+        .args(z.object({
+            formValues: z.record(z.any())
+        }))
+        .returns(z.any())
         .optional(),
     conditional: z.object({
         field: z.string(),
@@ -132,8 +136,10 @@ export const timeField = z.object({
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.string().optional(),
     valueCallback: z.function()
-        .args(z.record(z.any()))
-        .returns(z.string())
+        .args(z.object({
+            formValues: z.record(z.any())
+        }))
+        .returns(z.any())
         .optional(),
     conditional: z.object({
         field: z.string(),
@@ -154,8 +160,10 @@ export const dataUrlField = z.object({
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.string().optional(),
     valueCallback: z.function()
-        .args(z.record(z.any()))
-        .returns(z.string())
+        .args(z.object({
+            formValues: z.record(z.any())
+        }))
+        .returns(z.any())
         .optional(),
     conditional: conditionalSchema.optional(),
     disable: z.union([
@@ -177,8 +185,10 @@ export const selectField = z.object({
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.string().optional(),
     valueCallback: z.function()
-        .args(z.record(z.any()))
-        .returns(z.string())
+        .args(z.object({
+            formValues: z.record(z.any())
+        }))
+        .returns(z.any())
         .optional(),
     multiple: z.boolean().optional(), // Allow multiple selections
     conditional: conditionalSchema.optional(),
@@ -201,8 +211,10 @@ export const radioField = z.object({
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.string().optional(),
     valueCallback: z.function()
-        .args(z.record(z.any()))
-        .returns(z.string())
+        .args(z.object({
+            formValues: z.record(z.any())
+        }))
+        .returns(z.any())
         .optional(),
     conditional: conditionalSchema.optional(),
     disable: z.union([
@@ -224,7 +236,9 @@ export const simpleNumberField = z.object({
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.number().optional(),
     valueCallback: z.function()
-        .args(z.record(z.any()))
+        .args(z.object({
+            formValues: z.record(z.any())
+        }))
         .returns(z.number())
         .optional(),
     conditional: conditionalSchema.optional(),
@@ -254,7 +268,10 @@ export const booleanField = z.object({
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.boolean().optional(),
     valueCallback: z.function()
-        .args(z.record(z.any()))
+        .args(z.object({
+            formValues: z.record(z.any()),
+            fieldName: z.string(),
+        }))
         .returns(z.boolean())
         .optional(),
     conditional: conditionalSchema.optional(),
@@ -272,7 +289,9 @@ export const checkboxField = z.object({
     validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
     default: z.boolean().optional(),
     valueCallback: z.function()
-        .args(z.record(z.any()))
+        .args(z.object({
+            formValues: z.record(z.any())
+        }))
         .returns(z.boolean())
         .optional(),
     conditional: conditionalSchema.optional(),
@@ -289,7 +308,23 @@ export const checkboxField = z.object({
 export const customField = z.object({
     type: z.string(), // User-defined type
     title: z.string().optional(),
-}).extend(stylingExtension).passthrough(); // Allows additional properties at the same level
+    description: z.string().optional(),
+    required: z.boolean().optional(),
+    validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
+    default: z.any().optional(), // Default value can be of any type
+    valueCallback: z.function()
+        .args(z.object({
+            formValues: z.record(z.any())
+        }))
+        .returns(z.any())
+        .optional(),
+    conditional: conditionalSchema.optional(),
+    disable: z.union([
+        z.boolean(),
+        z.function().args(z.any()).returns(z.boolean()),
+    ]).optional(),
+
+}).extend(stylingExtension)
 
 
 // ----------------------------------------
