@@ -79,7 +79,8 @@ export const simpleTextField = z.object({
     default: z.string().optional(),
     valueCallback: z.function()
         .args(z.object({
-            formValues: z.record(z.any())
+            formValues: z.record(z.any()),
+            value: z.any()
         }))
         .returns(z.any())
         .optional(),
@@ -113,7 +114,8 @@ export const dateField = z.object({
     default: z.string().optional(),
     valueCallback: z.function()
         .args(z.object({
-            formValues: z.record(z.any())
+            formValues: z.record(z.any()),
+            value: z.any()
         }))
         .returns(z.any())
         .optional(),
@@ -137,7 +139,8 @@ export const timeField = z.object({
     default: z.string().optional(),
     valueCallback: z.function()
         .args(z.object({
-            formValues: z.record(z.any())
+            formValues: z.record(z.any()),
+            value: z.any()
         }))
         .returns(z.any())
         .optional(),
@@ -161,7 +164,8 @@ export const dataUrlField = z.object({
     default: z.string().optional(),
     valueCallback: z.function()
         .args(z.object({
-            formValues: z.record(z.any())
+            formValues: z.record(z.any()),
+            value: z.any()
         }))
         .returns(z.any())
         .optional(),
@@ -186,7 +190,8 @@ export const selectField = z.object({
     default: z.string().optional(),
     valueCallback: z.function()
         .args(z.object({
-            formValues: z.record(z.any())
+            formValues: z.record(z.any()),
+            value: z.any()
         }))
         .returns(z.any())
         .optional(),
@@ -212,7 +217,8 @@ export const radioField = z.object({
     default: z.string().optional(),
     valueCallback: z.function()
         .args(z.object({
-            formValues: z.record(z.any())
+            formValues: z.record(z.any()),
+            value: z.any()
         }))
         .returns(z.any())
         .optional(),
@@ -237,7 +243,8 @@ export const simpleNumberField = z.object({
     default: z.number().optional(),
     valueCallback: z.function()
         .args(z.object({
-            formValues: z.record(z.any())
+            formValues: z.record(z.any()),
+            value: z.any()
         }))
         .returns(z.number())
         .optional(),
@@ -254,6 +261,28 @@ export const simpleNumberField = z.object({
         data => !("minimum" in data) && !("maximum" in data),
         { message: "Simple number field should not have minimum or maximum" }
     );
+
+// TextArea field for multi-line text input
+export const textAreaField = z.object({
+    type: z.literal("textarea"),
+    title: z.string().optional(),
+    description: z.string().optional(),
+    required: z.boolean().optional(),
+    validator: z.function().args(z.any()).returns(z.union([z.string(), z.literal(true)]).optional()).optional(),
+    default: z.string().optional(),
+    valueCallback: z.function()
+        .args(z.object({
+            formValues: z.record(z.any()),
+            value: z.any()
+        }))
+        .returns(z.any())
+        .optional(),
+    conditional: conditionalSchema.optional(),
+    disable: z.union([
+        z.boolean(),
+        z.function().args(z.any()).returns(z.boolean()),
+    ]).optional(),
+}).extend(stylingExtension);
 
 
 // ----------------------------------------
@@ -290,7 +319,8 @@ export const checkboxField = z.object({
     default: z.boolean().optional(),
     valueCallback: z.function()
         .args(z.object({
-            formValues: z.record(z.any())
+            formValues: z.record(z.any()),
+            value: z.any()
         }))
         .returns(z.boolean())
         .optional(),
@@ -314,7 +344,8 @@ export const customField = z.object({
     default: z.any().optional(), // Default value can be of any type
     valueCallback: z.function()
         .args(z.object({
-            formValues: z.record(z.any())
+            formValues: z.record(z.any()),
+            value: z.any()
         }))
         .returns(z.any())
         .optional(),
@@ -340,6 +371,7 @@ const propertySchema: z.ZodType<any> = z.lazy(() => z.union([
     simpleNumberField,
     booleanField,
     checkboxField,
+    textAreaField,
     customField, // <<---- Custom Field
     blockField, // <<---- Block Field
 ]));

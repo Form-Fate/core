@@ -2,7 +2,7 @@ import {
     blockField, booleanField, checkboxField,
     conditionalSchema, customField, dataUrlField, dateField,
     optionsUrlSchema, radioField, selectField, simpleNumberField,
-    simpleTextField, timeField
+    simpleTextField, timeField, textAreaField
 } from './form-validator';
 
 import { z } from 'zod';
@@ -20,4 +20,5 @@ export type selectFieldInterface = z.infer<typeof selectField>;
 export type simpleNumberFieldInterface = z.infer<typeof simpleNumberField>;
 export type simpleTextFieldInterface = z.infer<typeof simpleTextField>;
 export type timeFieldInterface = z.infer<typeof timeField>;
-export type formFieldInterface = blockFieldInterface | booleanFieldInterface | checkboxFieldInterface | conditionalSchemaInterface | customFieldInterface | dataUrlFieldInterface | dateFieldInterface | optionsUrlSchemaInterface | radioFieldInterface | selectFieldInterface | simpleNumberFieldInterface | simpleTextFieldInterface | timeFieldInterface;
+export type textAreaFieldInterface = z.infer<typeof textAreaField>;
+export type formFieldInterface = blockFieldInterface | booleanFieldInterface | checkboxFieldInterface | conditionalSchemaInterface | customFieldInterface | dataUrlFieldInterface | dateFieldInterface | optionsUrlSchemaInterface | radioFieldInterface | selectFieldInterface | simpleNumberFieldInterface | simpleTextFieldInterface | timeFieldInterface | textAreaFieldInterface;
